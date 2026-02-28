@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature — AR Conseils</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --ar-dark: #1a1a2e;
+            --ar-medium: #2d2d44;
+            --ar-accent: #16213e;
+            --ar-light: #f8f9fa;
+            --ar-white: #ffffff;
+            --ar-border: #e2e8f0;
+            --ar-success: #10b981;
+            --ar-error: #ef4444;
+            --ar-text: #1e293b;
+            --ar-text-light: #64748b;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--ar-light);
+            color: var(--ar-text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--ar-white);
+            border-bottom: 1px solid var(--ar-border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header img { height: 40px; width: auto; }
+
+        .header-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ar-dark);
+            letter-spacing: -0.3px;
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+
+        .card {
+            background: var(--ar-white);
+            border-radius: var(--radius);
+            border: 1px solid var(--ar-border);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--ar-dark);
+        }
+
+        .info-grid { display: grid; gap: 8px; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-label {
+            font-size: 14px;
+            color: var(--ar-text-light);
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ar-text);
+            text-align: right;
+        }
+
+        /* ═══════════ DROPDOWN (mandat + legal) ═══════════ */
+        .dropdown {
+            border: 1px solid var(--ar-border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .dropdown summary {
+            padding: 12px 16px;
+            background: var(--ar-light);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ar-accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .dropdown summary::-webkit-details-marker { display: none; }
+
+        .dropdown summary::before {
+            content: '▶';
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+
+        .dropdown[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .dropdown summary:hover {
+            background: #eef2ff;
+        }
+
+        .dropdown-content {
+            padding: 16px;
+            font-size: 13px;
+            color: var(--ar-text-light);
+            line-height: 1.7;
+            border-top: 1px solid var(--ar-border);
+        }
+
+        .dropdown-content .section-title {
+            font-weight: 700;
+            text-decoration: underline;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            color: var(--ar-text);
+        }
+
+        .dropdown-content ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .dropdown-content ol li { margin-bottom: 6px; }
+
+        /* ═══════════ MINI DROPDOWN (legal text under checkbox) ═══════════ */
+        .legal-mini {
+            margin-top: 6px;
+            margin-left: 30px;
+            border: none;
+        }
+
+        .legal-mini summary {
+            padding: 0;
+            background: none;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--ar-text-light);
+            gap: 4px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .legal-mini summary::before {
+            content: 'ℹ️';
+            font-size: 11px;
+        }
+
+        .legal-mini[open] summary::before {
+            content: 'ℹ️';
+        }
+
+        .legal-mini summary:hover {
+            color: var(--ar-accent);
+            background: none;
+        }
+
+        .legal-mini .legal-text {
+            padding: 8px 0 0 0;
+            font-size: 12px;
+            color: var(--ar-text-light);
+            line-height: 1.5;
+            border-top: none;
+        }
+
+        /* ═══════════ SIGNATURE PAD ═══════════ */
+        .signature-area {
+            position: relative;
+            border: 2px solid var(--ar-border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--ar-white);
+            touch-action: none;
+        }
+
+        .signature-area canvas {
+            display: block;
+            width: 100%;
+            cursor: crosshair;
+        }
+
+        .signature-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: #cbd5e1;
+            pointer-events: none;
+            text-align: center;
+            transition: opacity 0.3s;
+        }
+
+        .signature-placeholder.hidden { opacity: 0; }
+
+        .clear-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--ar-border);
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: var(--ar-text-light);
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .clear-btn:hover { background: var(--ar-light); color: var(--ar-error); }
+
+        /* ═══════════ CONSENT CHECKBOX ═══════════ */
+        .consent-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        .consent-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            accent-color: var(--ar-dark);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .consent-check label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ar-text);
+            cursor: pointer;
+        }
+
+        /* ═══════════ SUBMIT BUTTON ═══════════ */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--ar-dark);
+            color: var(--ar-white);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: var(--ar-medium);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ═══════════ STATUS MESSAGES ═══════════ */
+        .status {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .status.success { display: block; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .status.error { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .status.loading { display: block; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        /* ═══════════ SUCCESS SCREEN ═══════════ */
+        .success-screen { display: none; text-align: center; padding: 40px 20px; }
+        .success-screen.active { display: block; }
+
+        .success-icon {
+            width: 72px; height: 72px;
+            background: #ecfdf5; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .success-icon svg { color: var(--ar-success); }
+        .success-screen h2 { font-size: 22px; margin-bottom: 8px; color: var(--ar-dark); }
+        .success-screen p { font-size: 15px; color: var(--ar-text-light); max-width: 360px; margin: 0 auto; }
+
+        /* ═══════════ ERROR SCREEN ═══════════ */
+        .error-screen { display: none; text-align: center; padding: 40px 20px; }
+        .error-screen.active { display: block; }
+        .error-screen h2 { font-size: 20px; margin-bottom: 8px; color: var(--ar-error); }
+        .error-screen p { font-size: 15px; color: var(--ar-text-light); }
+
+        /* ═══════════ FOOTER ═══════════ */
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: var(--ar-text-light); }
+        .footer a { color: var(--ar-accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 480px) {
+            .container { padding: 16px 12px 32px; }
+            .card { padding: 18px 16px; }
+            .info-row { flex-direction: column; gap: 2px; }
+            .info-value { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════ HEADER ═══════════ -->
+    <div class="header">
+        <img src="https://framerusercontent.com/images/kfOnlvYkl8R4QnYwS6O140BtNc.png?scale-down-to=512&width=2250&height=2250" alt="AR Conseils" style="height: 40px; width: auto;">
+        <span class="header-text">AR Conseils</span>
+    </div>
+
+    <!-- ═══════════ MAIN CONTENT ═══════════ -->
+    <div class="container">
+
+        <div id="signingForm">
+
+            <!-- Card: Info -->
+            <div class="card">
+                <div class="card-title">📋 Votre procuration LPP</div>
+                <div class="info-grid" id="clientInfo">
+                    <p style="color: var(--ar-text-light); font-size: 14px;">Chargement des informations...</p>
+                </div>
+            </div>
+
+            <!-- Card: Signature -->
+            <div class="card">
+                <div class="card-title">✍️ Signature électronique</div>
+
+                <!-- Déroulant : Voir le mandat de recherche -->
+                <details class="dropdown">
+                    <summary>📄 Voir le mandat de recherche</summary>
+                    <div class="dropdown-content">
+                        <p class="section-title">MANDATAIRE :</p>
+                        <p><strong>AR CONSEILS SÀRL</strong><br>
+                        Chemin du Grand-Puits, 40<br>
+                        CH-1217 Meyrin</p>
+
+                        <br>
+                        <p>Par la présente, j'autorise la société <strong>AR Conseils Sàrl</strong> à me représenter dans le cadre des démarches suivantes :</p>
+
+                        <ol>
+                            <li><strong>Recherche, collecte d'informations et suivi</strong> relatifs à mon avoir de 2<sup>e</sup> pilier (LPP) auprès des différentes caisses de pension, institutions de prévoyance et fondations de libre passage ;</li>
+                            <li><strong>Le cas échéant</strong>, prise de contact et échanges avec les caisses de compensation AVS ainsi que tout autre organisme social concerné, en vue de la clarification et/ou de la complétude de mon dossier.</li>
+                        </ol>
+
+                        <br>
+                        <p>La présente procuration autorise le mandataire à entreprendre toutes démarches utiles, à recevoir les documents et renseignements nécessaires et à correspondre en mon nom auprès des organismes précités.</p>
+
+                        <p>Elle est valable jusqu'à révocation écrite de ma part.</p>
+
+                        <br>
+                        <p class="section-title">Protection des données</p>
+                        <p>Les données personnelles collectées dans le cadre de la présente procuration sont utilisées exclusivement pour l'exécution du mandat confié à AR Conseils Sàrl et traitées de manière strictement confidentielle conformément à la Loi fédérale sur la protection des données (LPD).</p>
+
+                        <br>
+                        <p style="text-align:center; font-size:11px; color: var(--ar-text-light); padding-top: 12px; border-top: 1px solid var(--ar-border);">
+                            AR Conseils Sàrl — Chemin du Grand-Puits, 40 — 1217 Meyrin<br>
+                            (+41) 22 350 50 00 — info@conseils-ar.ch — www.conseils-ar.ch
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Zone de signature -->
+                <div class="signature-area" id="signatureArea">
+                    <canvas id="signaturePad"></canvas>
+                    <div class="signature-placeholder" id="placeholder">
+                        Signez ici avec votre doigt ou souris
+                    </div>
+                    <button class="clear-btn" onclick="clearSignature()">Effacer</button>
+                </div>
+
+                <!-- Checkbox consentement -->
+                <div class="consent-check">
+                    <input type="checkbox" id="consentCheckbox" onchange="updateSubmitState()">
+                    <label for="consentCheckbox">
+                        J'ai lu et j'accepte les termes de la procuration. Je consens à l'utilisation 
+                        de ma signature électronique sur ce document.
+                    </label>
+                </div>
+
+                <!-- Mini déroulant : détail juridique -->
+                <details class="legal-mini">
+                    <summary>En savoir plus</summary>
+                    <div class="legal-text">
+                        En signant ce document, vous autorisez AR Conseils Sàrl à entreprendre les démarches 
+                        de recherche et de suivi relatives à votre avoir de 2<sup>e</sup> pilier (LPP). 
+                        Votre signature sera intégrée directement sur la procuration officielle.
+                        Vos données sont traitées conformément à la Loi fédérale sur la protection des données (LPD).
+                    </div>
+                </details>
+
+                <!-- Bouton envoyer -->
+                <button class="submit-btn" id="submitBtn" onclick="submitSignature()" disabled>
+                    Signer la procuration
+                </button>
+
+                <!-- Messages de statut -->
+                <div class="status" id="statusMsg"></div>
+            </div>
+        </div>
+
+        <!-- Success screen -->
+        <div class="success-screen" id="successScreen">
+            <div class="success-icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <h2>Procuration signée !</h2>
+            <p>Votre signature a été enregistrée avec succès. AR Conseils va maintenant entamer les démarches de recherche de vos avoirs LPP.</p>
+        </div>
+
+        <!-- Error screen -->
+        <div class="error-screen" id="errorScreen">
+            <h2>⚠️ Lien invalide</h2>
+            <p>Ce lien de signature est invalide ou a déjà été utilisé. 
+               Veuillez contacter AR Conseils pour obtenir un nouveau lien.</p>
+            <p style="margin-top: 12px;">
+                📞 <a href="tel:+41223505000">+41 22 350 50 00</a><br>
+                ✉️ <a href="mailto:info@conseils-ar.ch">info@conseils-ar.ch</a>
+            </p>
+        </div>
+
+    </div>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <div class="footer">
+        AR Conseils Sàrl — Chemin du Grand-Puits, 40 — CH-1217 Meyrin<br>
+        <a href="tel:+41223505000">+41 22 350 50 00</a> · <a href="mailto:info@conseils-ar.ch">info@conseils-ar.ch</a> · <a href="https://www.conseils-ar.ch" target="_blank">www.conseils-ar.ch</a>
+    </div>
+
+    <!-- ═══════════ SIGNATURE PAD LIBRARY ═══════════ -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+
+    <script>
+    // ════════════════════════════════════════════════════════════
+    // ⚙️ CONFIGURATION — MODIFIER CETTE URL UNIQUEMENT
+    // ════════════════════════════════════════════════════════════
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx4VYndeieUv3obqkoDVfOoY3JFGZujcRL2i8Ipixm7HGRqgdrr_jcAbyz7tHeAS1Tflg/exec';
+    // ════════════════════════════════════════════════════════════
+
+    let signaturePad;
+    let signatureId = '';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        signatureId = window.location.hash.substring(1);
+        if (!signatureId) { showError(); return; }
+        initSignaturePad();
+        loadClientInfo();
+    });
+
+    function initSignaturePad() {
+        const canvas = document.getElementById('signaturePad');
+        const container = document.getElementById('signatureArea');
+
+        function resizeCanvas() {
+            const ratio = window.devicePixelRatio || 1;
+            canvas.width = container.offsetWidth * ratio;
+            canvas.height = 200 * ratio;
+            canvas.style.height = '200px';
+            canvas.getContext('2d').scale(ratio, ratio);
+            if (signaturePad) signaturePad.clear();
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)',
+            penColor: '#1a1a2e',
+            minWidth: 1,
+            maxWidth: 2.5
+        });
+
+        signaturePad.addEventListener('beginStroke', function() {
+            document.getElementById('placeholder').classList.add('hidden');
+            updateSubmitState();
+        });
+
+        signaturePad.addEventListener('endStroke', function() {
+            updateSubmitState();
+        });
+    }
+
+    function loadClientInfo() {
+        document.getElementById('clientInfo').innerHTML = `
+            <div class="info-row">
+                <span class="info-label">Document</span>
+                <span class="info-value">Procuration LPP</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Mandataire</span>
+                <span class="info-value">AR Conseils Sàrl</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Objet</span>
+                <span class="info-value">Recherche d'avoirs 2e pilier</span>
+            </div>
+        `;
+    }
+
+    function clearSignature() {
+        if (signaturePad) {
+            signaturePad.clear();
+            document.getElementById('placeholder').classList.remove('hidden');
+            updateSubmitState();
+        }
+    }
+
+    function updateSubmitState() {
+        const consent = document.getElementById('consentCheckbox').checked;
+        const hasSigned = signaturePad && !signaturePad.isEmpty();
+        document.getElementById('submitBtn').disabled = !(consent && hasSigned);
+    }
+
+    async function submitSignature() {
+        const btn = document.getElementById('submitBtn');
+        if (!signatureId) { showStatus('Erreur : lien invalide.', 'error'); return; }
+        if (signaturePad.isEmpty()) { showStatus('Veuillez signer.', 'error'); return; }
+        if (!document.getElementById('consentCheckbox').checked) { showStatus('Veuillez accepter.', 'error'); return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Envoi en cours...';
+        showStatus('⏳ Envoi de votre signature en cours...', 'loading');
+
+        try {
+            await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    signatureId: signatureId,
+                    signatureImage: signaturePad.toDataURL('image/png')
+                })
+            });
+            showSuccess();
+        } catch (error) {
+            console.error('Erreur:', error);
+            showStatus('❌ Erreur de connexion. Veuillez réessayer.', 'error');
+            btn.disabled = false;
+            btn.textContent = 'Signer la procuration';
+        }
+    }
+
+    function showStatus(message, type) {
+        const s = document.getElementById('statusMsg');
+        s.className = 'status ' + type;
+        s.textContent = message;
+    }
+
+    function showSuccess() {
+        document.getElementById('signingForm').style.display = 'none';
+        document.getElementById('successScreen').classList.add('active');
+    }
+
+    function showError() {
+        document.getElementById('signingForm').style.display = 'none';
+        document.getElementById('errorScreen').classList.add('active');
+    }
+    </script>
+
+</body>
+</html>
