@@ -550,33 +550,28 @@
         document.getElementById('submitBtn').disabled = !(consent && hasSigned);
     }
 
-    async function submitSignature() {
+    function submitSignature() {
         const btn = document.getElementById('submitBtn');
         if (!signatureId) { showStatus('Erreur : lien invalide.', 'error'); return; }
         if (signaturePad.isEmpty()) { showStatus('Veuillez signer.', 'error'); return; }
         if (!document.getElementById('consentCheckbox').checked) { showStatus('Veuillez accepter.', 'error'); return; }
 
+        // Désactiver le bouton immédiatement
         btn.disabled = true;
-        btn.textContent = 'Envoi en cours...';
-        showStatus('⏳ Envoi de votre signature en cours...', 'loading');
 
-        try {
-            await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    signatureId: signatureId,
-                    signatureImage: signaturePad.toDataURL('image/png')
-                })
-            });
-            showSuccess();
-        } catch (error) {
-            console.error('Erreur:', error);
-            showStatus('❌ Erreur de connexion. Veuillez réessayer.', 'error');
-            btn.disabled = false;
-            btn.textContent = 'Signer la procuration';
-        }
+        // Afficher le succès IMMÉDIATEMENT (avant l'envoi)
+        showSuccess();
+
+        // Envoyer la signature en arrière-plan (le client ne voit pas l'attente)
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                signatureId: signatureId,
+                signatureImage: signaturePad.toDataURL('image/png')
+            })
+        });
     }
 
     function showStatus(message, type) {
