@@ -473,7 +473,7 @@
     // ════════════════════════════════════════════════════════════
     // ⚙️ CONFIGURATION — MODIFIER CETTE URL UNIQUEMENT
     // ════════════════════════════════════════════════════════════
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbywvrT3mz27V3vVJQd30YX73zPs1K-XX90N_ULB2ez5jMXTiKR5ysmDT-mDXzXOCBN3/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwN8NVzGjmK-aQnU9encaDVVKM487k9ajeTJcHjlXHNWgOvD_lbdliU8dDRzcVPgtDW/exec';
     // ════════════════════════════════════════════════════════════
 
     let signaturePad;
